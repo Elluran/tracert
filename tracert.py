@@ -14,11 +14,20 @@ def trace(host):
         dest_addr = socket.gethostbyname(host)
         
         timeout = struct.pack("ll", TIMEOUT_SEC, TIMEOUT_MS)
-        receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+        try:
+            receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+        except socket.error:
+            print("could not open a receiver socket")
+            return
         receiver_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVTIMEO, timeout)
         receiver_socket.bind(("", PORT))
 
-        sender_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        try:
+            sender_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        except socket.error:
+            print("could not open a sender socket")
+            return
+        
         sender_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
         
         
